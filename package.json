@@ -16,14 +16,20 @@
     "pcm-server": "./server.js"
   },
   "pkg": {
-    "assets": [ "client/**/*", "server/sox" ],
-    "targets": [ "node18-macos-x64" ],
+    "assets": [
+      "client/**/*",
+      "server/sox"
+    ],
+    "targets": [
+      "node18-macos-x64"
+    ],
     "outputPath": "compiled"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
+    "plist": "^3.0.6",
     "ws": "^8.8.1",
     "yargs": "^17.6.2"
   }

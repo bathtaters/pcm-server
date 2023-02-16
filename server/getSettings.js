@@ -1,7 +1,8 @@
 const { spawnSync } = require('child_process')
+const { parse } = require('plist')
 const getInputList = () => 
-  JSON.parse(spawnSync('system_profiler',['SPAudioDataType', '-json']).stdout.toString())
-    .SPAudioDataType[0]._items
+  parse(spawnSync('system_profiler',['SPAudioDataType', '-xml']).stdout.toString())
+    [0]._items[0]._items
     .filter(({ coreaudio_device_input }) => coreaudio_device_input)
 
 
