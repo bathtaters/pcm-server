@@ -1,18 +1,16 @@
-const { join } = require('path')
-const { existsSync } = require('fs')
 const { spawn, spawnSync } = require('child_process')
 const { PassThrough, Transform } = require('stream')
 const getSettings = require('./getSettings')
 const onExit = require('./onExit')
 
-let soxPath = join(__dirname, 'sox')
+let soxPath = spawnSync('which', ['sox'], { encoding: 'utf-8' }).stdout
 
-// Check for SOX binary in "server" folder, or on OS
-if (!existsSync(soxPath)) {
-  soxPath = spawnSync("which", ["sox"], { encoding: "utf-8" }).stdout
+// Check for SoX binary is installed
+if (!soxPath) {
+  soxPath = './sox'
 
-  if (!soxPath) {
-    console.error('Error: SoX binary is missing. Run "npm run getsox" or install from https://sox.sourceforge.net/.')
+  if (!spawnSync(soxPath, ['--version'], { encoding: 'utf-8' }).stdout) {
+    console.error('Error: SoX binary is missing. Install from https://sox.sourceforge.net/')
     process.exit(1)
   }
 }
