@@ -56,4 +56,4 @@ Code adapted or directly used from the following projects:
  - https://github.com/samirkumardas/pcm-player
  - https://github.com/richtr/NoSleep.js
 
-Relies on unbundled depency: SoX - Sound eXchange - https://sox.sourceforge.net/
+Relies on unbundled dependency: SoX - Sound eXchange - https://sox.sourceforge.net/
