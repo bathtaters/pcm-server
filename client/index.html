@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stream Audio</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+    <link rel="stylesheet" href="./main.css" />
+    <script src="./NoSleep.min.js"></script>
+    <script src="./PCMPlayer.js"></script>
+    <script src="./main.js" defer></script>
+  </head>
+  <body>
+    <div id="container">
+      <div class="topRight">
+        <button type="button" id="reload" onclick="javascript:location.reload()">Refresh</button>
+      </div>
+      <button type="button" id="control" disabled="true">Loading</button>
+      <input type="range" min="0" max="200" value="0" id="gain">
+    </div>
+  </body>
+</html>

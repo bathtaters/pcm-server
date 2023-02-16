@@ -1,0 +1,71 @@
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: #222;
+  color: #AAA;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+#container {
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+}
+button {
+  cursor: pointer;
+  border-radius: 10px;
+  color:#DDD;
+  background: #000;
+  border: 3px solid #AAA;
+  min-height: 3rem;
+}
+
+button:disabled,
+button.negative:disabled,
+button.positive:disabled {
+  color:#111;
+  background: #555;
+  cursor: not-allowed;
+}
+button.negative {
+  background-color: #530;
+}
+button.positive {
+  background-color: #053;
+}
+
+input#gain {
+  width: 60%;
+}
+
+button#control {
+  width: 75%;
+  font-size: 300%;
+  padding: 10% 1rem;
+  font-weight: bold;
+}
+
+.topRight {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 25%;
+}
+
+button#reload {
+  width: 100%;
+  font-size: 100%;
+  background-color: #333;
+}
