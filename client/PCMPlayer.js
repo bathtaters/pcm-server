@@ -1,3 +1,5 @@
+/* Adapted from code by samirkumardas - https://github.com/samirkumardas/pcm-player */
+
 function PCMPlayer(option) {
   this.init(option);
 }

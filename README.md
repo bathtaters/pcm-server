@@ -46,3 +46,14 @@ I recommend a latency of 10 for best performance with minimal latency.
  - Run `npm -g install pkg` to allow compiling your own binaries
     - `Package.json:pkg.targets` to set binary targets
     - `Package.json:scripts.getsox` to update *SoX* binary version downloaded
+
+----
+
+### Credits
+
+Code adapted or directly used from the following projects:
+ - https://github.com/Ivan-Feofanov/ws-audio-api
+ - https://github.com/samirkumardas/pcm-player
+ - https://github.com/richtr/NoSleep.js
+
+Relies on unbundled depency: SoX - Sound eXchange - https://sox.sourceforge.net/
