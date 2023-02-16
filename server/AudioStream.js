@@ -1,7 +1,21 @@
-const { spawn } = require('child_process')
+const { join } = require('path')
+const { existsSync } = require('fs')
+const { spawn, spawnSync } = require('child_process')
 const { PassThrough, Transform } = require('stream')
 const getSettings = require('./getSettings')
 const onExit = require('./onExit')
+
+let soxPath = join(__dirname, 'sox')
+
+// Check for SOX binary in "server" folder, or on OS
+if (!existsSync(soxPath)) {
+  soxPath = spawnSync("which", ["sox"], { encoding: "utf-8" }).stdout
+
+  if (!soxPath) {
+    console.error('Error: SoX binary is missing. Run "npm run getsox" or install from https://sox.sourceforge.net/.')
+    process.exit(1)
+  }
+}
 
 class CustomStream extends Transform {
   _transform(chunk, encoding, callback) {
@@ -11,7 +25,7 @@ class CustomStream extends Transform {
 }
 
 module.exports = function AudioStream(settings) {
-  settings = getSettings(settings || process.env)
+  settings = getSettings(settings || {})
   const { device, channels, sampleRate, bitdepth, gaindb, endian, encoding, fileType, debug } = settings.server
 
   let stopListening = null
@@ -20,7 +34,7 @@ module.exports = function AudioStream(settings) {
   const infoStream = new PassThrough()
   const audioProcessOptions = { stdio: ['ignore', 'pipe', 'ignore'] }
 
-  if(debug === 'verbose') {
+  if(debug) {
     audioProcessOptions.stdio[2] = 'pipe'
     infoStream.on('data',  (data)  => console.debug("Received Info: " + data))
     infoStream.on('error', (error) => console.error("Error in Info Stream: " + error))
@@ -33,19 +47,19 @@ module.exports = function AudioStream(settings) {
 
     start() {
       if(audioProcess) return debug && console.error("Duplicate calls to start(): Audio stream already started!")
-      
-      if(debug === 'verbose') console.log(['sox',
+
+      if(debug) console.log([soxPath,
         '-b', '24', '-e', 'signed-int',
         '-d', '-b', bitdepth, '--endian', endian,
         '-c', channels, '-r', sampleRate, '-e', encoding,
-        '-t', fileType, debug === 'verbose' ? '-S' : '-q', '-n',
+        '-t', fileType, debug ? '-S' : '-q', '-n',
         ...(gaindb ? ['vol', gaindb, 'dB'] : []),
       ].join(' '))
 
-      audioProcess = spawn('sox', [
+      audioProcess = spawn(soxPath, [
         '-d', '-b', bitdepth, '--endian', endian,
         '-c', channels, '-r', sampleRate, '-e', encoding,
-        '-t', fileType, debug === 'verbose' ? '-S' : '-q', '-',
+        '-t', fileType, debug ? '-S' : '-q', '-',
         ...(gaindb ? ['vol', gaindb, 'dB'] : []),
       ], audioProcessOptions)
 

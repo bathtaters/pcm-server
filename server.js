@@ -1,10 +1,11 @@
-require('dotenv').config()
+const args = require('./server/getArgs')
+
 const WebSocket = require('ws')
 const express = require('express')
 const AudioStream = require('./server/AudioStream')
 
 const app = express()
-const server = app.listen(process.env.port || '8080', () => { console.info('Listening on port',process.env.port || '8080') })
+const server = app.listen(args.port || 8080, () => { console.info('Listening on port',args.port || 8080) })
 const wss = new WebSocket.Server({ server })
 
 app.use(express.static(__dirname + '/client'))
@@ -14,12 +15,12 @@ wss.on('connection', (ws, req) => {
   const ip = req.socket.remoteAddress
   console.info('Connected to',ip)
   
-  const audio = AudioStream()
+  const audio = AudioStream(args)
   const stream = audio.getStream()
   
   ws.on('message', (msg) => {
     msg = msg.toString()
-    if (process.env.debug && process.env.debug !== 'false') console.info('Recieved message:',msg,'from',ip)
+    if (args.debug) console.info('Recieved message:',msg,'from',ip)
     switch (msg) {
       case 'stream:info':   return ws.send(audio.settings.client)
       case 'stream:start':  return audio.start()
