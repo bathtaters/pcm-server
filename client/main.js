@@ -1,6 +1,6 @@
 var connection, player,
   noSleep = new NoSleep(),
-  url = 'ws://192.168.0.179:3012',
+  url = 'ws://'+location.hostname+(location.port ? ':'+location.port : ''),
   debugTo = null;
 
 function setUI(state) {
