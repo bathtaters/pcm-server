@@ -3,16 +3,13 @@ const { PassThrough, Transform } = require('stream')
 const getSettings = require('./getSettings')
 const onExit = require('./onExit')
 
-let soxPath = spawnSync('which', ['sox'], { encoding: 'utf-8' }).stdout
+const SOX_LOCATIONS = [ './sox', 'sox', '/usr/local/bin/sox' ]
 
 // Check for SoX binary is installed
+const soxPath = SOX_LOCATIONS.find((s) => spawnSync(s, ['--version'], { encoding: 'utf-8' }).stdout)
 if (!soxPath) {
-  soxPath = './sox'
-
-  if (!spawnSync(soxPath, ['--version'], { encoding: 'utf-8' }).stdout) {
-    console.error('Error: SoX binary is missing. Install from https://sox.sourceforge.net/')
-    process.exit(1)
-  }
+  console.error('Error: SoX binary is missing. Install from https://sox.sourceforge.net/')
+  process.exit(1)
 }
 
 class CustomStream extends Transform {
