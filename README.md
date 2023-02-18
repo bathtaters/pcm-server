@@ -1,5 +1,5 @@
 # **PCM Server**
-Use to stream raw audio from an audio input device.
+Use to stream raw audio from an audio input device. (Only works on MacOS currently)
 
 I recommend a latency of 10 for best performance with minimal latency.
 
@@ -27,8 +27,9 @@ I recommend a latency of 10 for best performance with minimal latency.
 |`-h`|`--help`|Show help and quit|[boolean]| |
 | |`--version`|Show version number and quit|[boolean]| |
 |`-p`|`--port`|Port to bind server|[number]|`8080`|
+|`-d`|`--device`|Name of audio device to use|[string]|*system input*|
 |`-c`|`--channels`|Channel count (1=mono, 2=stereo, etc)|[number]|`1`|
-|`-s`|`--samplerate`|Sample rate in Hz|[number]|*via system*|
+|`-s`|`--samplerate`|Sample rate in Hz|[number]|*match device*|
 |`-b`|`--bitdepth`|Bit-depth in bits|[number]|`16`|
 |`-e`|`--encoding`|Audio encoding: `signed-integer` OR `floating-point`|[string]|`signed-integer`|
 |`-l`|`--latency`|Delay in milliseconds *(AKA packet size)*|[number]|`1000`|

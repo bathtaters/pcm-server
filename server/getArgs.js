@@ -8,6 +8,11 @@ module.exports = yargs(hideBin(process.argv))
     describe: 'port to bind server',
     default: 8080,
   })
+  .option('device', {
+    alias: 'd',
+    type: 'string',
+    describe: 'name of audio device to use [default: system input]',
+  })
   .option('channels', {
     alias: 'c',
     type: 'number',
@@ -17,7 +22,7 @@ module.exports = yargs(hideBin(process.argv))
   .option('samplerate', {
     alias: 's',
     type: 'number',
-    describe: 'sample rate in Hz [default: use device sample rate]',
+    describe: 'sample rate in Hz [default: device sample rate]',
   })
   .option('bitdepth', {
     alias: 'b',
