@@ -3,6 +3,7 @@ const args = require('./server/getArgs')
 const WebSocket = require('ws')
 const express = require('express')
 const AudioStream = require('./server/AudioStream')
+const getSettings = require('./server/getSettings')
 
 const app = express()
 const server = app.listen(args.port || 8080, () => { console.info('Listening on port',args.port || 8080) })
@@ -10,12 +11,13 @@ const wss = new WebSocket.Server({ server })
 
 app.use(express.static(__dirname + '/client'))
 
+const streamSettings = getSettings(args || {})
 
 wss.on('connection', (ws, req) => {
   const ip = req.socket.remoteAddress
   console.info('Connected to',ip)
   
-  const audio = AudioStream(args)
+  const audio = AudioStream(streamSettings)
   const stream = audio.getStream()
   
   ws.on('message', (msg) => {

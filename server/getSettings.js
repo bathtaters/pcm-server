@@ -33,32 +33,37 @@ module.exports = function checkSettings(settings) {
   settings = getDefaults(settings)
   settings.debug = settings.debug && settings.debug !== 'false' && settings.debug
   
-  // Get default device
-  if (!settings.device) settings.device = inputs.find(({ coreaudio_default_audio_input_device }) => coreaudio_default_audio_input_device)._name
-
-  // Check settings list for device
-  const inputData = inputs.find(({ _name }) => settings.device.toLowerCase() === _name.toLowerCase())
+  // Get device info (Use default device if none specified)
+  let inputData = settings.device ?
+    inputs.find(({ _name }) => !settings.device.localeCompare(_name.slice(0,settings.device.length), undefined, { sensitivity: 'base' }) ) :
+    inputs.find(({ coreaudio_default_audio_input_device }) => coreaudio_default_audio_input_device)
+  
   if (!inputData) {
-    console.error(inputs.map(({ _name }) => _name))
-    throw new Error(`${settings}: Device not found! Copy inputSettings.device from above list.`)
+    console.error(`ERROR: Device "${settings.device || 'default system device'}" not found! Use --device from below list`)
+    if (inputs.length) console.error(`\t- ${inputs.map(({ _name }) => _name).join('\n\t- ')}\n`)
+    else console.error('\tNO INPUT DEVICES FOUND - You should be on a MacOS system with at least one audio input.\n')
+    process.exit(1)
   }
 
   // Force known settings
   settings.device = inputData._name
-  if (!settings.channels || settings.channels > inputData.coreaudio_device_input) {
-    if (settings.channels) console.warn(`Trimmed invalid channel count: ${settings.channels} to ${inputData.coreaudio_device_input}`)
-    settings.channels = inputData.coreaudio_device_input
-  }
+  if (!settings.channels) settings.channels = inputData.coreaudio_device_input
   settings.sampleRate = inputData.coreaudio_device_srate
 
+  // Fix 24-bit
+  if (settings.bitdepth == 24) { settings.bitdepth = 32 }
+
+  // Get client settings
+  const client = clientSettings(settings)
+  
   // Convert to strings
-  if (settings.channels)   settings.channels   = settings.channels.toString()
   if (settings.bitdepth)   settings.bitdepth   = settings.bitdepth.toString()
   if (settings.sampleRate) settings.sampleRate = settings.sampleRate.toString()
 
-  // Fix 24-bit
-  if (settings.bitdepth === '24') { settings.bitdepth = '32' }
+  // Get channel settings
+  settings.channels = settings.channels != inputData.coreaudio_device_input ? +settings.channels : ''
+  settings.trimChannels = settings.channels && settings.channels < inputData.coreaudio_device_input
 
   if (settings.debug) console.info('Using settings:',settings)
-  return { server: settings, client: clientSettings(settings) }
+  return { server: settings, client }
 }

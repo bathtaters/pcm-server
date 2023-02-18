@@ -1,9 +1,9 @@
 const { spawn, spawnSync } = require('child_process')
 const { PassThrough, Transform } = require('stream')
-const getSettings = require('./getSettings')
 const onExit = require('./onExit')
 
 const SOX_LOCATIONS = [ './sox', 'sox', '/usr/local/bin/sox' ]
+const AUDIO_DRIVER = 'coreaudio' // MacOS-specific option
 
 // Check for SoX binary is installed
 const soxPath = SOX_LOCATIONS.find((s) => spawnSync(s, ['--version'], { encoding: 'utf-8' }).stdout)
@@ -11,6 +11,20 @@ if (!soxPath) {
   console.error('Error: SoX binary is missing. Install from https://sox.sourceforge.net/')
   process.exit(1)
 }
+
+// Options for SoX binary
+const getSoxOptions = ({ device, channels, trimChannels, sampleRate, bitdepth, gaindb, endian, encoding, fileType, debug }) => [
+  '-t', AUDIO_DRIVER, device, '-t', fileType,
+  '-b', bitdepth, '-r', sampleRate,
+  '-e', encoding, '--endian', endian,
+  debug ? '-S' : '-q', '-',
+  ...(gaindb ? ['vol', gaindb, 'dB'] : []),
+  ...(!channels ? [] : 
+    trimChannels ?
+    ['remix'].concat([...Array(channels)].map((_,i) => `${i+1}`)) :
+    ['channels', `${channels}`]
+  ),
+]
 
 class CustomStream extends Transform {
   _transform(chunk, encoding, callback) {
@@ -20,8 +34,8 @@ class CustomStream extends Transform {
 }
 
 module.exports = function AudioStream(settings) {
-  settings = getSettings(settings || {})
-  const { device, channels, sampleRate, bitdepth, gaindb, endian, encoding, fileType, debug } = settings.server
+  const { debug } = settings.server
+  const soxOpts = getSoxOptions(settings.server)
 
   let stopListening = null
   let audioProcess = null
@@ -43,20 +57,8 @@ module.exports = function AudioStream(settings) {
     start() {
       if(audioProcess) return debug && console.error("Duplicate calls to start(): Audio stream already started!")
 
-      if(debug) console.log([soxPath,
-        '-b', '24', '-e', 'signed-int',
-        '-d', '-b', bitdepth, '--endian', endian,
-        '-c', channels, '-r', sampleRate, '-e', encoding,
-        '-t', fileType, debug ? '-S' : '-q', '-n',
-        ...(gaindb ? ['vol', gaindb, 'dB'] : []),
-      ].join(' '))
-
-      audioProcess = spawn(soxPath, [
-        '-d', '-b', bitdepth, '--endian', endian,
-        '-c', channels, '-r', sampleRate, '-e', encoding,
-        '-t', fileType, debug ? '-S' : '-q', '-',
-        ...(gaindb ? ['vol', gaindb, 'dB'] : []),
-      ], audioProcessOptions)
+      if(debug) console.log(soxPath, soxOpts.join(' '))
+      audioProcess = spawn(soxPath, soxOpts, audioProcessOptions)
 
       audioProcess.on('exit', function(code, sig) {
         if(code != null && sig === null) {
