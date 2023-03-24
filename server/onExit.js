@@ -2,7 +2,7 @@ module.exports = function onExit(handler) {
   let isExiting = false
 
   const exitHandler = (exit = false, hasError) => (err) => {
-    if (hasError) console.error(err)
+    if (hasError) console.error('ERROR', err)
     if (isExiting) return hasError && process.exit()
     isExiting = true
     handler()

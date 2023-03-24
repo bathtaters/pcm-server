@@ -64,6 +64,6 @@ module.exports = function checkSettings(settings) {
   settings.channels = settings.channels != inputData.coreaudio_device_input ? +settings.channels : ''
   settings.trimChannels = settings.channels && settings.channels < inputData.coreaudio_device_input
 
-  if (settings.debug) console.info('Using settings:',settings)
+  if (settings.debug) console.debug('* Using settings:',settings)
   return { server: settings, client }
 }

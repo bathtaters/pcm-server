@@ -8,7 +8,7 @@ const AUDIO_DRIVER = 'coreaudio' // MacOS-specific option
 // Check for SoX binary is installed
 const soxPath = SOX_LOCATIONS.find((s) => spawnSync(s, ['--version'], { encoding: 'utf-8' }).stdout)
 if (!soxPath) {
-  console.error('Error: SoX binary is missing. Install from https://sox.sourceforge.net/')
+  console.error('ERROR: SoX binary is missing. Install from https://sox.sourceforge.net/')
   process.exit(1)
 }
 
@@ -45,8 +45,8 @@ module.exports = function AudioStream(settings) {
 
   if(debug) {
     audioProcessOptions.stdio[2] = 'pipe'
-    infoStream.on('data',  (data)  => console.debug("Received Info: " + data))
-    infoStream.on('error', (error) => console.error("Error in Info Stream: " + error))
+    infoStream.on('data',  (data)  => console.debug("  * Received Info: " + data))
+    infoStream.on('error', (error) => console.error("ERROR in Info Stream: " + error))
   }
 
   const result = {
@@ -55,20 +55,20 @@ module.exports = function AudioStream(settings) {
     isRunning: () => Boolean(audioProcess),
 
     start() {
-      if(audioProcess) return debug && console.error("Duplicate calls to start(): Audio stream already started!")
+      if(audioProcess) return debug && console.warn("! Duplicate calls to start(): Audio stream already started!")
 
-      if(debug) console.log(soxPath, soxOpts.join(' '))
+      if(debug) console.log('*', soxPath, soxOpts.join(' '))
       audioProcess = spawn(soxPath, soxOpts, audioProcessOptions)
 
       audioProcess.on('exit', function(code, sig) {
         if(code != null && sig === null) {
           audioStream.emit('audioProcessExitComplete')
-          console.warn("SoX has exited with code = %d", code)
+          console.warn("! SoX has exited with code = %d", code)
         }
       })
 
       if(audioProcess.stderr) audioProcess.stderr.pipe(infoStream)
-      else if(debug) console.info("Audio stream: started")
+      else if(debug) console.debug("  * Audio stream: started")
       audioProcess.stdout.pipe(audioStream)
       audioStream.emit('startComplete')
       stopListening = onExit(result.stop)
@@ -79,7 +79,7 @@ module.exports = function AudioStream(settings) {
       audioProcess.kill('SIGTERM')
       audioProcess = null
       audioStream.emit('stopComplete')
-      if(debug) console.info("Audio stream: stopped")
+      if(debug) console.debug("  * Audio stream: stopped")
       stopListening && stopListening()
     },
 
@@ -88,7 +88,7 @@ module.exports = function AudioStream(settings) {
       audioProcess.kill('SIGSTOP')
       audioStream.pause()
       audioStream.emit('pauseComplete')
-      if(debug) console.info("Audio stream: paused")
+      if(debug) console.debug("  * Audio stream: paused")
     },
 
     resume() {
@@ -96,13 +96,13 @@ module.exports = function AudioStream(settings) {
       audioProcess.kill('SIGCONT')
       audioStream.resume()
       audioStream.emit('resumeComplete')
-      if(debug) console.info("Audio stream: resumed")
+      if(debug) console.debug("  * Audio stream: resumed")
     },
   }
 
   infoStream.on('end', () => {
     if (audioProcess) result.stop()
-    if (debug) console.error("Info stream closed.")
+    if (debug) console.debug("  * Info stream closed.")
   })
 
   return result

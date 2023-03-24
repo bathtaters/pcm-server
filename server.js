@@ -4,9 +4,18 @@ const WebSocket = require('ws')
 const express = require('express')
 const AudioStream = require('./server/AudioStream')
 const getSettings = require('./server/getSettings')
+const ip = require('./server/getIP')
+const pkg = require('./package.json')
+const onExit = require('./server/onExit')
 
 const app = express()
-const server = app.listen(args.port || 8080, () => { console.info('Listening on port',args.port || 8080) })
+
+console.info(`PCM Audio Broadcast Server -- v${pkg.version} by ${pkg.author}`)
+
+const server = app.listen(args.port || 8080, () => {
+  console.info(`> Server is running at http://${ip}:${args.port || 8080}. Press Ctrl+C to stop.`)
+  onExit(() => { console.info('\n> Server is closing.') })
+})
 const wss = new WebSocket.Server({ server })
 
 app.use(express.static(__dirname + '/client'))
@@ -15,14 +24,14 @@ const streamSettings = getSettings(args || {})
 
 wss.on('connection', (ws, req) => {
   const ip = req.socket.remoteAddress
-  console.info('Connected to',ip)
+  console.info('> Connected to',ip)
   
   const audio = AudioStream(streamSettings)
   const stream = audio.getStream()
   
   ws.on('message', (msg) => {
     msg = msg.toString()
-    if (args.debug) console.info('Recieved message:',msg,'from',ip)
+    if (args.debug) console.debug('  * Recieved message:',msg,'from',ip)
     switch (msg) {
       case 'stream:info':   return ws.send(audio.settings.client)
       case 'stream:start':  return audio.start()
@@ -33,7 +42,7 @@ wss.on('connection', (ws, req) => {
     }
   })
   ws.on('close', () => {
-    console.info('Disconnected from',ip)
+    console.info('> Disconnected from',ip)
     audio.stop()
   })
 
