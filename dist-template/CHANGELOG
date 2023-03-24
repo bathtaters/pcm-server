@@ -20,9 +20,8 @@ v2.1.0 - 2/18/23
 
 ---------------------------------------------
 v2.2.0 - 3/24/23
-	- created auto version update scripts
+	- create auto version update scripts
 	- improve user message formatting
-	- initial commit, get local IP
-	- add author and change nodemon script name
-	- run pkg from npx
-	- automate tgz compression and build
+	- print local IP for server
+	- run pkg compiler via npx instead of locally
+	- automate tgz compression and builds
