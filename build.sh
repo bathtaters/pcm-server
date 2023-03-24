@@ -30,7 +30,7 @@ fi
 
 # Compile app
 echo "> Compiling $filename..."
-pkg "$pkgfile"
+npx pkg "$pkgfile"
 
 # Rename and compress compiledir
 echo "> Compressing $filename to .$TAREXT..."
