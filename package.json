@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node ./server.js",
-    "start-mon": "nodemon ./server.js",
+    "dev": "nodemon ./server.js",
     "build": "./build.sh macos",
     "custom": "node ./server.js -p 3012 -l 10 -c 2 -b 24 -e signed-integer",
     "bin": "./compiled/pcm-server -p 3012 -l 10 -c 2 -b 24 -e signed-integer",
@@ -25,7 +25,7 @@
     ],
     "outputPath": "compiled"
   },
-  "author": "",
+  "author": "bathtaters",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
