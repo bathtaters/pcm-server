@@ -1,0 +1,19 @@
+PCM Server Change Log
+
+---------------------------------------------
+v2.0.0 - 2/16/23
+    Inital public release (v1.0 only functioned with my specific setup)
+
+---------------------------------------------
+v2.1.0 - 2/18/23
+    Major changes:
+        - Allow selecting non-default device
+        - Changed how channel count mismatches are handled
+            - If channels setting is less than input channels:
+                Used to: Fold excess channels into selected channels (See SoX -c option)
+                Now: Removes excess channels from the stream
+            - If channels setting is greater than input channels:
+                Used to: Throw error and exit
+                Now: Repeats base channels to fill in excess channels (See SoX -c option)
+    Bug fixes:
+        - Checks settings on server start (Rather than waiting for a client to connect)

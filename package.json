@@ -10,7 +10,10 @@
     "custom": "node ./server.js -p 3012 -l 10 -c 2 -b 24 -e signed-integer",
     "bin": "./compiled/pcm-server -p 3012 -l 10 -c 2 -b 24 -e signed-integer",
     "test": "echo 'Error: no test specified' && exit 1",
-    "getsox": "mkdir .tmp && cd .tmp && wget https://pilotfiber.dl.sourceforge.net/project/sox/sox/14.4.2/sox-14.4.2-macosx.zip -O s.zip && unzip s.zip && cd $(ls -d */|head -n 1) && mv sox ../../sox && rm -Rf ../../.tmp"
+    "getsox": "mkdir .tmp && cd .tmp && wget https://pilotfiber.dl.sourceforge.net/project/sox/sox/14.4.2/sox-14.4.2-macosx.zip -O s.zip && unzip s.zip && cd $(ls -d */|head -n 1) && mv sox ../../sox && rm -Rf ../../.tmp",
+    "changelog": "node ./dist-template/update.js",
+    "version": "node ./dist-template/update.js compiled",
+    "postversion": "npm run build"
   },
   "bin": {
     "pcm-server": "./server.js"

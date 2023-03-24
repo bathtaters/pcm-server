@@ -1,4 +1,3 @@
-# **PCM Server**
 Use to stream raw audio from an audio input device. (Only works on MacOS currently)
 
 Distributed under the MIT License by bathtaters
@@ -8,9 +7,11 @@ NOTE: This software does not include SoX, user must install it separately in ord
 
 Repository: https://github.com/bathtaters/pcm-server/
 
-----
-## Get Started (For MacOS)
-1. Download binary for MacOS
+
+-----------------------
+Get Started (For MacOS)
+-----------------------
+1. Download the pcm-server binary
 2. Download and install SoX from https://sox.sourceforge.net/
     - For simple install go to: https://sourceforge.net/projects/sox/files/sox/
     - Find latest version, download MacOS zip file and unzip, move file `sox` to `/usr/local/bin/`
@@ -25,39 +26,37 @@ Repository: https://github.com/bathtaters/pcm-server/
     - You can check your IP Address under *System Preferences > Network > Advanced > TCP/IP* (Ensure that your connection method ie. "WiFi" is selected)
     - The port number will be shown when you run the program
 6. If you're experiencing issues, stop server w/ `Ctrl+C` and tweak options and confirm correct input device is selected
-----
-## CLI Options
-|Option||Description|Type|Default|
-|--|--|--|--|--|
-|`-h`|`--help`|Show help and quit|[boolean]| |
-| |`--version`|Show version number and quit|[boolean]| |
-|`-p`|`--port`|Port to bind server|[number]|`8080`|
-|`-d`|`--device`|Audio device to use (Name from sound menu)|[string]|*system input*|
-|`-c`|`--channels`|Channel count (1=mono, 2=stereo, etc)|[number]|`1`|
-|`-s`|`--samplerate`|Sample rate in Hz|[number]|*match device*|
-|`-b`|`--bitdepth`|Bit-depth in bits|[number]|`16`|
-|`-e`|`--encoding`|Audio encoding: `signed-integer` OR `floating-point`|[string]|`signed-integer`|
-|`-l`|`--latency`|Delay in milliseconds *(AKA packet size)*|[number]|`1000`|
-|`-g`|`--gaindb`|Gain to apply in decibels *(negative attenuates, positive amplifies)*|[number]|`0`|
-| |`--debug`|Output verbose debug info|[boolean]|`false`|
 
 
-----
+-----------
+CLI Options
+-----------
+Option			Description			        Type		Default
+------------------------------------------------------------------------------
+-h  --help		Show help and quit		    [boolean]
+    --version	Show version and quit	    [boolean]
+-d  --device    Audio device to use         [string]    (system input)
+            (Name from sound menu)
+-p  --port		Port to bind server		    [number]	8080
+-c  --channels 	Channel count			    [number]	1
+			 (1 = mono, 2 = stereo, etc)
+-s  --samplerate	Sample rate in Hz	    [number]	(match device)
+-b  --bitdepth	Bit-depth in bits		    [number]	16
+-e  --encoding	Audio encoding		        [string]	signed-integer
+			 (signed-integer OR floating-point)
+-l  --latency	Delay in milliseconds	    [number]	1000
+			 (sets packet size)
+-g  --gaindb	Gain to apply in decibels	[number]	0
+			 (negative attenuates, positive amplifies)
+    --debug		Output verbose debug info	[boolean]	false
 
-### **Dev Notes:**
- - Must have *SoX* installed: https://sox.sourceforge.net/ (or use `npm run getsox` to install a copy locally)
- - Use `npm run custom|bin` script to save your own preferred settings
- - Run `npm -g install pkg` to allow compiling your own binaries
-    - `Package.json:pkg.targets` to set binary targets
-    - `Package.json:scripts.getsox` to update *SoX* binary version downloaded
 
-----
-
-### Credits
+-------
+Credits
+-------
 
 Code adapted or directly used from the following projects:
  - https://github.com/Ivan-Feofanov/ws-audio-api
  - https://github.com/samirkumardas/pcm-player
  - https://github.com/richtr/NoSleep.js
-
-Relies on unbundled dependency: SoX - Sound eXchange - https://sox.sourceforge.net/
+ - Relies on unbundled dependency: SoX - Sound eXchange - https://sox.sourceforge.net/
