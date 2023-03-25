@@ -13,7 +13,7 @@
     "getsox": "mkdir .tmp && cd .tmp && wget https://pilotfiber.dl.sourceforge.net/project/sox/sox/14.4.2/sox-14.4.2-macosx.zip -O s.zip && unzip s.zip && cd $(ls -d */|head -n 1) && mv sox ../../sox && rm -Rf ../../.tmp",
     "changelog": "node ./dist-template/update.js",
     "version": "node ./dist-template/update.js compiled",
-    "postversion": "npm run build"
+    "postversion": "npm run build && git push --tags"
   },
   "bin": {
     "pcm-server": "./server.js"

@@ -8,6 +8,7 @@ const filenames = {
     change: 'CHANGELOG',
     readme: 'README.txt',
     license: 'LICENSE.txt',
+    release: 'Release.md',
     self: path.basename(__filename),
 }
 
@@ -25,15 +26,20 @@ const destDir = process.argv[2] && path.join(sourceDir,'..',process.argv[2])
 function main() {
     
     // Get file contents
-    const files = loadFiles(sourceDir, [filenames.self])
+    const files = loadFiles(sourceDir, [filenames.self, filenames.release])
     
     // Get versions
     const currentVersion = pkg.version, prevVersion = lastVersion(files[filenames.change])
+
+    // Get commit list
+    const commits = getCommits(changeFormat, prevVersion)
     
     // If versions mismatch, update changelog
-    const updateLog = updateChangelog(sourceDir, prevVersion, currentVersion, files[filenames.change])
+    const updateLog = updateChangelog(sourceDir, prevVersion, currentVersion, files[filenames.change], commits)
     if (updateLog) files[filenames.change] = updateLog
 
+    // Update release docs
+    updateRelease(sourceDir, currentVersion, commits)
     
     // If no argument provided, quit
     if (!destDir) return console.log('No destination provided, skipping file updates.')
@@ -73,6 +79,31 @@ function updateReadme(text, version) {
 }
 
 
+// GITHUB OPTIONS
+
+const releaseReadme = (version, commits) =>
+`# PCM Server - v${version}
+### Use to stream raw audio from an audio input device.
+
+This version only works on a MacOS x64 server
+
+----
+
+### Updates
+${commits.replace(/\t/g,' ')}
+
+----
+
+Relies on SoX - Sound eXchange - https://sox.sourceforge.net/
+NOTE: This software does not include SoX, user must install it separately in order for this to work.
+`
+
+function updateRelease(dir, version, commits) {
+    if (!commits.trim()) return console.log('No new commits, skipping release doc updates.')
+    console.log('Updating release docs to', version)
+    saveFile(dir, filenames.release, releaseReadme(version, commits))
+}
+
 
 // CHANGELOG OPTIONS
 
@@ -82,11 +113,11 @@ const changeHdr = (version, date = new Date()) =>
 `\n\n---------------------------------------------
 v${version} - ${date.toLocaleDateString('en-US',{ dateStyle: 'short' })}\n`
 
-function updateChangelog(dir, fromV, toV, oldChangelog) {
+function updateChangelog(dir, fromV, toV, oldChangelog, commits) {
     if (fromV === toV) return console.log('Skipping changelog, already updated to',toV)
 
     console.log('Updating changelog from',fromV,'to',toV)
-    const newLog = oldChangelog + changeHdr(toV) + getCommits(changeFormat, fromV)
+    const newLog = oldChangelog + changeHdr(toV) + commits
     saveFile(dir, filenames.change, newLog)
 
     runCommand(`git add "${path.join(dir,filenames.change)}"`)
@@ -132,8 +163,11 @@ function lastVersion(changelog) {
     return vLine && vLine.match(vLineRegex)?.[1]
 }
 
+const commitFilterRegex = /[v\s]\d+\.\d+\.\d+/
 function getCommits(format, fromVersion, toVersion = '') {
-    return runCommand(`git log v${fromVersion}..${toVersion ? 'v' : ''}${toVersion} --pretty=format:"${format}"`)
+    const commits = runCommand(`git log v${fromVersion}..${toVersion ? 'v' : ''}${toVersion} --pretty=format:"${format}"`)
+        .split('\n')
+    return commits.filter((commit) => !commitFilterRegex.test(commit)).join('\n')
 }
 
 // Run
