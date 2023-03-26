@@ -19,6 +19,7 @@ const server = app.listen(args.port || 8080, () => {
 const wss = new WebSocket.Server({ server })
 
 app.use(express.static(__dirname + '/client'))
+app.use(express.static(__dirname + '/node_modules/nosleep.js/dist/'))
 
 const streamSettings = getSettings(args || {})
 
